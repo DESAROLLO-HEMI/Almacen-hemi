@@ -3,26 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HEMI - Escáner</title>
+    <title>HEMI - Escáner Pro</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        body { font-family: sans-serif; margin: 0; background: #003366; color: white; text-align: center; }
+        :root { --azul: #003366; --dorado: #d4af37; }
+        body { font-family: sans-serif; margin: 0; background: var(--azul); color: white; text-align: center; }
         .container { background: white; color: #333; margin-top: 20px; border-radius: 30px 30px 0 0; padding: 20px; min-height: 90vh; }
-        .btn-scan { background: #003366; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; cursor: pointer; margin: 20px 0; }
-        #reader { width: 100%; max-width: 400px; margin: auto; border: 2px solid #ddd; border-radius: 10px; overflow: hidden; }
+        .btn-scan { background: var(--azul); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 18px; cursor: pointer; margin-bottom: 20px; width: 100%; }
+        #reader { width: 100%; border-radius: 15px; overflow: hidden; margin-bottom: 20px; }
+        .lista-vales { text-align: left; list-style: none; padding: 0; }
+        .item-vale { background: #f0f4f8; padding: 12px; margin-bottom: 8px; border-radius: 10px; border-left: 4px solid var(--dorado); display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
-    <h2>HEMI - Operadores</h2>
+    <h2 style="margin: 20px 0;">HEMI - Almacén</h2>
     <div class="container">
         <h3>Perfil: Alfredo N.</h3>
-        <p>Apunta al QR de la herramienta</p>
-        
-        <button class="btn-scan" onclick="iniciarEscaneo()">📸 ABRIR ESCÁNER</button>
         
         <div id="reader"></div>
+        <button class="btn-scan" onclick="iniciarEscaneo()">📸 ESCANEAR ARTÍCULO</button>
 
-        <button onclick="window.history.back()" style="margin-top:40px; background:none; border:none; color:#999;">← Volver</button>
+        <h4 style="text-align: left; color: var(--azul);">📦 Artículos en posesión:</h4>
+        <ul id="lista-articulos" class="lista-vales">
+            <li class="item-vale"><span>Ejemplo: Arnés de seguridad</span> ✅</li>
+        </ul>
+
+        <button onclick="window.history.back()" style="margin-top:40px; background:none; border:none; color:#999;">← Volver al inicio</button>
     </div>
 
     <script>
@@ -31,9 +37,17 @@
             const config = { fps: 10, qrbox: { width: 250, height: 250 } };
             
             html5QrCode.start({ facingMode: "environment" }, config, (texto) => {
-                alert("HERRAMIENTA DETECTADA: " + texto);
-                html5QrCode.stop();
-            }).catch(err => alert("Error: Necesitas HTTPS para usar la cámara"));
+                // AGREGAR A LA LISTA EN LUGAR DE ALERT
+                const lista = document.getElementById("lista-articulos");
+                const nuevoItem = document.createElement("li");
+                nuevoItem.className = "item-vale";
+                nuevoItem.innerHTML = `<span>📍 ${texto}</span> <span>${new Date().toLocaleTimeString()}</span>`;
+                
+                lista.appendChild(nuevoItem); // Se añade a la lista visual
+                
+                html5QrCode.stop(); // Detiene la cámara
+                alert("Asignado con éxito: " + texto);
+            }).catch(err => alert("Error al activar cámara. Revisa permisos HTTPS."));
         }
     </script>
 </body>
